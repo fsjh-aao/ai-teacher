@@ -351,29 +351,21 @@
     
     err.textContent = '';
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> 驗證中...';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> 雲端安全驗證中...';
 
-    // 如果使用者只輸入了 admin，自動補齊信箱格式
-    if (!u.includes('@')) {
-      u = u + '@fsjh.kh.edu.tw';
-    }
+    // 若未輸入完整信箱網域，自動補齊學校網域
+    const email = u.includes('@') ? u : u + '@fsjh.kh.edu.tw';
 
     try {
-      await firebase.auth().signInWithEmailAndPassword(u, p);
+      // 100% 由 Firebase 雲端伺服器進行密碼加密比對，前端不存任何密碼
+      await firebase.auth().signInWithEmailAndPassword(email, p);
       document.getElementById('adminLoginSection').style.setProperty('display', 'none', 'important');
       document.getElementById('adminDashboardSection').style.setProperty('display', 'block', 'important');
       fetchFirestoreData();
     } catch (error) {
-      if (u.toLowerCase().startsWith('admin') && p === 'fsjh9999') {
-        try { await firebase.auth().signInAnonymously(); } catch(e) {}
-        document.getElementById('adminLoginSection').style.setProperty('display', 'none', 'important');
-        document.getElementById('adminDashboardSection').style.setProperty('display', 'block', 'important');
-        fetchFirestoreData();
-      } else {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i> 登入管理台';
-        err.textContent = '登入失敗：帳號或密碼錯誤';
-      }
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i> 登入管理台';
+      err.textContent = '登入失敗：帳號或密碼錯誤';
     }
   }
 
