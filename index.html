@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>高雄市立福山國中 試題詳解小老師</title>
+  <!-- Google Fonts: Plus Jakarta Sans & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --surface: #ffffff;
+      --bg: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    /* 頂部導覽列 */
+    .app-header {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .school-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+      color: #4338ca;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(199, 210, 254, 0.8);
+      letter-spacing: 0.03em;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.06);
+    }
+
+    .app-title-gradient {
+      background: linear-gradient(135deg, #0f172a 0%, #312e81 40%, #4338ca 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      font-size: 1.65rem;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .ai-badge {
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .main-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      transition: all 0.3s ease;
+    }
+
+    /* 科目卡片按鈕 */
+    .subject-btn {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 12px;
+      border-radius: var(--radius-lg);
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      background-color: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .subject-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+      color: var(--text-main);
+    }
+
+    .subject-icon-box {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-size: 1.7rem;
+      transition: transform 0.35s ease;
+      z-index: 1;
+    }
+
+    .subject-btn:hover .subject-icon-box {
+      transform: scale(1.1) rotate(3deg);
+    }
+
+    .corner-ambient {
+      position: absolute;
+      top: -24px;
+      right: -24px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      z-index: 0;
+      opacity: 0.5;
+      filter: blur(8px);
+      transition: opacity 0.3s ease;
+    }
+
+    .subject-btn:hover .corner-ambient {
+      opacity: 0.85;
+    }
+
+    .subject-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      z-index: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .subject-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 4px;
+      z-index: 1;
+    }
+
+    /* 篩選按鈕 (Pills) */
+    .filter-pill {
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .filter-pill:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+
+    .filter-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    /* 分段切換器 (Segmented Control) */
+    .segmented-control {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 12px;
+      gap: 4px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .segmented-control .nav-link {
+      color: #64748b;
+      font-weight: 600;
+      padding: 8px 22px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-size: 0.92rem;
+    }
+
+    .segmented-control .nav-link.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    /* 進入按鈕區域 */
+    .action-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 28px;
+      text-align: center;
+    }
+
+    .btn-launch {
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      color: #ffffff;
+      font-weight: 800;
+      padding: 10px 30px;
+      border-radius: 999px;
+      font-size: 1rem;
+      border: none;
+      box-shadow: 0 6px 16px -4px rgba(79, 70, 229, 0.4);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn-launch:hover {
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -4px rgba(79, 70, 229, 0.5);
+    }
+
+    .subject-header-banner {
+      background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      border: 1px solid #e0e7ff;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       RWD 響應式排版設計 (電腦版 vs 手機版最佳化)
+       ═══════════════════════════════════════════════════════ */
+    
+    /* 手機版樣式 (螢幕寬度 <= 768px) */
+    @media (max-width: 768px) {
+      body {
+        padding: 0;
+      }
+      .app-header {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+      }
+      .app-title-gradient {
+        font-size: 1.35rem !important;
+      }
+      .school-badge {
+        font-size: 0.75rem !important;
+        padding: 3px 10px !important;
+      }
+      .main-card {
+        padding: 18px 14px !important;
+        border-radius: 16px !important;
+        margin-left: -6px;
+        margin-right: -6px;
+      }
+      /* 手機版科目卡片：自動排成整齊易按的 2 欄網格 */
+      #subjectMatrix {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+      }
+      #subjectMatrix > div:last-child:nth-child(odd) {
+        grid-column: span 2; /* 第 5 個科目置中跨欄 */
+      }
+      .subject-btn {
+        padding: 16px 10px !important;
+      }
+      .subject-icon-box {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.5rem !important;
+        margin-bottom: 8px !important;
+      }
+      .subject-title {
+        font-size: 1.05rem !important;
+      }
+      /* 手機版篩選按鈕與進入按鈕：加大觸控區域 */
+      .filter-pill {
+        padding: 8px 14px !important;
+        font-size: 0.88rem !important;
+        flex: 1 1 auto;
+        text-align: center;
+      }
+      .segmented-control {
+        width: 100%;
+        display: flex;
+      }
+      .segmented-control .nav-link {
+        flex: 1;
+        text-align: center;
+        padding: 8px 6px !important;
+        font-size: 0.85rem !important;
+      }
+      .action-card {
+        text-align: center !important;
+        padding: 16px 12px !important;
+      }
+      .action-card .text-start, .action-card .text-md-end {
+        text-align: center !important;
+        width: 100%;
+      }
+      .btn-launch {
+        width: 100% !important;
+        justify-content: center;
+        padding: 12px 20px !important;
+        font-size: 1.05rem !important;
+      }
+    }
+
+    /* 電腦版樣式 (螢幕寬度 > 768px) */
+    @media (min-width: 769px) {
+      #subjectMatrix {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 14px !important;
+      }
+      #subjectMatrix > div {
+        flex: 1 1 0;
+        min-width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 頂部精簡導覽 / 美化校名與系統大標題 -->
+<header class="app-header py-2 mb-3">
+  <div class="container d-flex flex-wrap justify-content-center align-items-center gap-3" style="max-width: 960px;">
+    <div class="school-badge">
+      <i class="bi bi-mortarboard-fill text-primary"></i> 高雄市立福山國中
+    </div>
+    <div class="d-flex align-items-center">
+      <h1 class="app-title-gradient mb-0">試題詳解小老師</h1>
+      <span class="ai-badge"><i class="bi bi-stars"></i> AI 導學</span>
+    </div>
+  </div>
+</header>
+
+<!-- 主內容區 -->
+<main class="container pb-4" style="max-width: 960px;">
+  <div class="main-card p-3 p-md-4">
+    
+    <!-- 步驟 1：選擇科目 -->
+    <div id="step1">
+      <div class="text-center mb-3">
+        <h5 class="fw-bold text-dark mb-1">請選擇要解題的科目</h5>
+        <p class="text-muted small mb-0">點擊下方各科課本圖示，即可直接進入專屬的詳解筆記本</p>
+      </div>
+
+      <div class="d-flex gap-3 overflow-auto pb-2 px-1" id="subjectMatrix" style="flex-wrap: nowrap; -webkit-overflow-scrolling: touch;">
+        <div class="text-center w-100 py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="text-muted small mt-2 mb-0">載入科目中...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 步驟 2：選擇條件 -->
+    <div id="step2" style="display: none;">
+      <!-- 上方導航與當前科目 -->
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom gap-2">
+        <button class="btn btn-light border btn-sm px-3 rounded-pill fw-bold text-secondary shadow-sm" onclick="goBackToStep1()">
+          <i class="bi bi-arrow-left me-1"></i> 返回選擇其他科目
+        </button>
+        <div class="subject-header-banner py-1 px-3">
+          <span class="text-secondary small fw-bold">當前選擇科目：</span>
+          <span class="fw-bold text-primary fs-6" id="selectedSubjectTitle">國文</span>
+        </div>
+      </div>
+      
+      <!-- 篩選條件區塊 (卡片化，緊湊間距) -->
+      <div class="d-flex flex-column gap-2 mb-3">
+        <!-- 1. 選擇學年度 -->
+        <div class="p-2 px-3 bg-light bg-opacity-50 border rounded-3">
+          <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-2 small">
+            <span class="badge bg-primary rounded-circle" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+            <span>選擇學年度</span>
+          </div>
+          <div class="d-flex flex-wrap gap-2 pt-1" id="yearSelector"></div>
+        </div>
+
+        <!-- 2. 考試類別 與 3. 書商版本 (同一列並排) -->
+        <div class="row g-2">
+          <!-- 2. 選擇考試類別 -->
+          <div class="col-md-6">
+            <div class="p-2 px-3 bg-light bg-opacity-50 border rounded-3 h-100">
+              <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-2 small">
+                <span class="badge bg-primary rounded-circle" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+                <span>選擇考試類別</span>
+              </div>
+              <div class="d-flex flex-wrap gap-2 pt-1" id="examTypeSelector"></div>
+            </div>
+          </div>
+
+          <!-- 3. 選擇書商版本 -->
+          <div class="col-md-6">
+            <div class="p-2 px-3 bg-light bg-opacity-50 border rounded-3 h-100">
+              <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-2 small">
+                <span class="badge bg-primary rounded-circle" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
+                <span>選擇書商版本</span>
+              </div>
+              <div class="pt-1">
+                <div class="segmented-control" id="publisherSelector"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 【底部】進入解題空間按鈕與狀態區 (左右分欄) -->
+      <div class="action-card shadow-sm p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+        <div class="text-start">
+          <div class="text-secondary small fw-bold mb-1">
+            <i class="bi bi-compass me-1 text-primary"></i> 當前查詢條件：
+          </div>
+          <div>
+            <span class="badge bg-white text-dark border px-3 py-1 fs-6 shadow-sm" id="currentSelectionLabel"></span>
+          </div>
+        </div>
+        <div id="finalActionContainer" class="text-md-end"></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  let AppData = {
+    years: [],
+    examTypes: [],
+    publishers: [],
+    subjects: [],
+    links: {}
+  };
+
+  let currentYear = '';
+  let currentExamType = '';
+  let currentPublisher = '';
+  let currentSubject = '';
+  let scriptUrl = '';
+
+  window.addEventListener('DOMContentLoaded', () => {
+    fetchSystemData();
+    google.script.run.withSuccessHandler(url => scriptUrl = url).getScriptUrl();
+  });
+
+  function goToAdmin() {
+    google.script.run
+      .withSuccessHandler(url => {
+        let base = url;
+        try {
+          if (window.top && window.top.location.href) {
+            const topHref = window.top.location.href.split('?')[0];
+            if (topHref.includes('script.google.com')) {
+              base = topHref;
+            }
+          }
+        } catch (e) {}
+        window.open(base + '?page=admin', '_top');
+      })
+      .getScriptUrl();
+  }
+
+  function fetchSystemData(callback) {
+    google.script.run
+      .withSuccessHandler((res) => {
+        AppData = res;
+        if (!currentYear && AppData.years.length > 0) currentYear = AppData.years[0];
+        if (!currentExamType && AppData.examTypes.length > 0) currentExamType = AppData.examTypes[0];
+        if (!currentPublisher && AppData.publishers.length > 0) currentPublisher = AppData.publishers[0];
+        renderStudentUI();
+        if (callback) callback();
+      })
+      .withFailureHandler((err) => {
+        alert('載入資料失敗：' + err.message);
+      })
+      .getSystemData();
+  }
+
+  // 渲染前台學生視圖
+  function renderStudentUI() {
+    if (!currentSubject) {
+      // 狀態 A：選擇科目 (Step 1)
+      document.getElementById('step1').style.display = 'block';
+      document.getElementById('step2').style.display = 'none';
+
+      const matrixContainer = document.getElementById('subjectMatrix');
+      matrixContainer.innerHTML = '';
+
+      const iconMap = {
+        '國文': 'bi-journal-richtext',
+        '英文': 'bi-translate',
+        '數學': 'bi-calculator-fill',
+        '社會': 'bi-globe-americas',
+        '自然': 'bi-radioactive'
+      };
+
+      const colorMap = {
+        '國文': { bg: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)', text: '#9333ea', corner: '#d8b4fe' },
+        '英文': { bg: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)', text: '#dc2626', corner: '#fca5a5' },
+        '數學': { bg: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', text: '#2563eb', corner: '#93c5fd' },
+        '社會': { bg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', text: '#d97706', corner: '#fcd34d' },
+        '自然': { bg: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', text: '#059669', corner: '#6ee7b7' }
+      };
+
+      AppData.subjects.forEach(sub => {
+        const col = document.createElement('div');
+        col.style.flex = "1 1 0";
+        col.style.minWidth = "140px";
+        
+        const colors = colorMap[sub] || { bg: '#f1f5f9', text: '#475569', corner: '#e2e8f0' };
+
+        col.innerHTML = `
+          <a href="javascript:void(0);" onclick="selectSubject('${sub}')" class="subject-btn h-100">
+            <div class="corner-ambient" style="background: ${colors.corner};"></div>
+            <div class="subject-icon-box" style="background: ${colors.bg}; color: ${colors.text};">
+              <i class="bi ${iconMap[sub] || 'bi-book'}"></i>
+            </div>
+            <div class="subject-title">${sub}</div>
+            <div class="subject-hint">點擊選擇</div>
+          </a>
+        `;
+        matrixContainer.appendChild(col);
+      });
+    } else {
+      // 狀態 B：選擇其他條件 (Step 2)
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step2').style.display = 'block';
+      document.getElementById('selectedSubjectTitle').textContent = currentSubject;
+
+      // 1. 年度按鈕
+      const yearContainer = document.getElementById('yearSelector');
+      yearContainer.innerHTML = '';
+      AppData.years.forEach(y => {
+        const btn = document.createElement('button');
+        btn.className = `filter-pill ${y === currentYear ? 'active' : ''}`;
+        btn.textContent = y;
+        btn.onclick = () => {
+          currentYear = y;
+          renderStudentUI();
+        };
+        yearContainer.appendChild(btn);
+      });
+
+      // 2. 考試類別按鈕
+      const examTypeContainer = document.getElementById('examTypeSelector');
+      examTypeContainer.innerHTML = '';
+      AppData.examTypes.forEach(type => {
+        const btn = document.createElement('button');
+        btn.className = `filter-pill ${type === currentExamType ? 'active' : ''}`;
+        btn.textContent = type;
+        btn.onclick = () => {
+          currentExamType = type;
+          renderStudentUI();
+        };
+        examTypeContainer.appendChild(btn);
+      });
+
+      // 3. 書商按鈕
+      const pubContainer = document.getElementById('publisherSelector');
+      pubContainer.innerHTML = '';
+      AppData.publishers.forEach(pub => {
+        const a = document.createElement('a');
+        a.className = `nav-link ${pub === currentPublisher ? 'active' : ''}`;
+        a.href = 'javascript:void(0);';
+        a.textContent = pub.endsWith('版') ? pub : pub + '版';
+        a.onclick = () => {
+          currentPublisher = pub;
+          renderStudentUI();
+        };
+        pubContainer.appendChild(a);
+      });
+
+      // 更新選擇摘要
+      const pubDisplay = currentPublisher.endsWith('版') ? currentPublisher : currentPublisher + '版';
+      document.getElementById('currentSelectionLabel').textContent = `${currentYear} · ${currentExamType} · ${pubDisplay} · ${currentSubject}`;
+
+      // 4. 動態顯示進入按鈕
+      const key = `${currentYear}_${currentExamType}_${currentPublisher}_${currentSubject}`;
+      const url = AppData.links[key];
+      const hasUrl = Boolean(url && url.trim() !== '');
+
+      const actionContainer = document.getElementById('finalActionContainer');
+      if (hasUrl) {
+        actionContainer.innerHTML = `
+          <a href="${url}" target="_blank" class="btn-launch">
+            <i class="bi bi-stars"></i> 進入 ${currentSubject} 小老師 <i class="bi bi-arrow-up-right-circle-fill ms-1"></i>
+          </a>
+          <div class="text-muted small mt-1 text-md-end"><i class="bi bi-google me-1"></i>將開啟 Gemini Notebook 進行互動解題</div>
+        `;
+      } else {
+        actionContainer.innerHTML = `
+          <button class="btn btn-secondary btn-lg px-4 py-3 fw-bold rounded-pill" disabled style="opacity: 0.65; cursor: not-allowed;">
+            <i class="bi bi-tools me-2"></i>此試題詳解空間建置中
+          </button>
+          <div class="text-muted small mt-1 text-md-end">該條件下尚未建立解題筆記本連結</div>
+        `;
+      }
+    }
+  }
+
+  function selectSubject(sub) {
+    currentSubject = sub;
+    renderStudentUI();
+  }
+
+  function goBackToStep1() {
+    currentSubject = '';
+    renderStudentUI();
+  }
+</script>
+
+</body>
+</html>

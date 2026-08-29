@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理後台 - 高雄市立福山國中 試題詳解小老師 (Firebase版)</title>
+  <!-- Google Fonts: Plus Jakarta Sans & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --surface: #ffffff;
+      --bg: #f1f5f9;
+      --card-border: rgba(226, 232, 240, 0.8);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background-color: var(--bg);
+      font-family: 'Plus Jakarta Sans', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    /* 登入視窗 */
+    .login-container {
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
+    }
+
+    .login-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+      padding: 36px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-icon-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 16px;
+    }
+
+    /* 管理後台佈局 */
+    .dashboard-layout {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .admin-sidebar {
+      width: 320px;
+      background-color: #ffffff;
+      color: #334155;
+      border-right: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .sidebar-section-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #475569;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .admin-content {
+      flex: 1;
+      padding: 32px 40px;
+      background-color: #f8fafc;
+      overflow-y: auto;
+    }
+
+    .content-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+      padding: 32px;
+    }
+
+    .current-filter-badge {
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+      color: var(--primary);
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(199, 210, 254, 0.6);
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 各科連結輸入列 */
+    .subject-input-row {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .subject-input-row:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .subject-badge-pill {
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 6px 14px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 90px;
+      justify-content: center;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-layout { flex-direction: column; }
+      .admin-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
+      .admin-content { padding: 16px 12px; }
+      .content-card { padding: 20px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 登入區塊 -->
+<div class="login-container container-fluid justify-content-center align-items-center" style="min-height: 100vh; display: flex;" id="adminLoginSection">
+  <div class="login-card">
+    <div class="login-icon-box">
+      <i class="bi bi-shield-lock-fill"></i>
+    </div>
+    <div class="text-center mb-4">
+      <div class="badge bg-light text-secondary border px-3 py-1 mb-2">Firebase 雲端版 · 福山國中</div>
+      <h4 class="fw-bold text-dark mb-1">管理員登入</h4>
+      <p class="text-muted small">請輸入管理帳號與密碼</p>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-secondary small fw-bold">管理帳號</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light text-secondary"><i class="bi bi-person"></i></span>
+        <input type="text" id="adminUsername" class="form-control" onkeydown="if(event.key==='Enter') loginAdmin()">
+      </div>
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label text-secondary small fw-bold">密碼</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light text-secondary"><i class="bi bi-key"></i></span>
+        <input type="password" id="adminPassword" class="form-control" onkeydown="if(event.key==='Enter') loginAdmin()">
+      </div>
+    </div>
+    
+    <div class="text-danger small fw-bold mb-3 text-center" id="adminLoginError"></div>
+    
+    <button class="btn btn-primary w-100 fw-bold py-2 mb-2 shadow-sm rounded-pill" id="adminLoginBtn" onclick="loginAdmin()">
+      <i class="bi bi-box-arrow-in-right me-1"></i> 登入管理台
+    </button>
+    <a class="btn btn-outline-secondary w-100 btn-sm rounded-pill" href="index.html">
+      <i class="bi bi-house-door me-1"></i> 返回學生前台
+    </a>
+  </div>
+</div>
+
+<!-- 管理介面區塊 (Dashboard) -->
+<div id="adminDashboardSection" style="display: none;">
+  <div class="dashboard-layout">
+    
+    <!-- 左側側邊欄 -->
+    <aside class="admin-sidebar">
+      <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom">
+        <div class="rounded-3 bg-primary bg-opacity-10 text-primary p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+          <i class="bi bi-sliders fs-5"></i>
+        </div>
+        <div>
+          <h6 class="fw-bold mb-0 text-dark">後台控制台</h6>
+          <span class="text-muted small" style="font-size: 0.78rem;">Firebase 雲端即時版</span>
+        </div>
+      </div>
+
+      <!-- 條件 1: 學年度 -->
+      <div class="sidebar-card">
+        <div class="sidebar-section-title"><i class="bi bi-calendar3 me-1 text-primary"></i> 1. 學年度</div>
+        <select class="form-select form-select-sm mb-2" id="adminYearSelect" onchange="loadAdminLinks()"></select>
+        <div class="input-group input-group-sm">
+          <input type="text" id="newYearInput" class="form-control" onkeydown="if(event.key==='Enter') addYear()" placeholder="例: 115">
+          <button class="btn btn-outline-primary" onclick="addYear()">+ 新增</button>
+        </div>
+      </div>
+
+      <!-- 條件 2: 考試類別 -->
+      <div class="sidebar-card">
+        <div class="sidebar-section-title"><i class="bi bi-card-checklist me-1 text-primary"></i> 2. 考試類別</div>
+        <select class="form-select form-select-sm mb-2" id="adminExamTypeSelect" onchange="loadAdminLinks()"></select>
+        <div class="input-group input-group-sm">
+          <input type="text" id="newExamTypeInput" class="form-control" onkeydown="if(event.key==='Enter') addExamType()" placeholder="例: 模擬考">
+          <button class="btn btn-outline-primary" onclick="addExamType()">+ 新增</button>
+        </div>
+      </div>
+
+      <!-- 條件 3: 書商版本 -->
+      <div class="sidebar-card">
+        <div class="sidebar-section-title"><i class="bi bi-book me-1 text-primary"></i> 3. 書商版本</div>
+        <select class="form-select form-select-sm mb-2" id="adminPublisherSelect" onchange="loadAdminLinks()"></select>
+        <div class="input-group input-group-sm">
+          <input type="text" id="newPublisherInput" class="form-control" onkeydown="if(event.key==='Enter') addPublisher()" placeholder="例: 全國">
+          <button class="btn btn-outline-primary" onclick="addPublisher()">+ 新增</button>
+        </div>
+      </div>
+
+      <!-- 快捷操作按鈕 -->
+      <div class="mt-3 pt-3 border-top d-grid gap-2">
+        <a class="btn btn-light border btn-sm text-start py-2 text-secondary fw-semibold shadow-sm" href="index.html">
+          <i class="bi bi-house-door me-2 text-primary"></i> 返回前台首頁
+        </a>
+        <button class="btn btn-outline-danger btn-sm text-start py-2 fw-semibold" onclick="logout()">
+          <i class="bi bi-box-arrow-right me-2"></i> 登出管理員
+        </button>
+      </div>
+    </aside>
+
+    <!-- 右側內容區 -->
+    <main class="admin-content">
+      <div class="content-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom gap-2">
+          <div>
+            <h4 class="fw-bold text-dark mb-1">各科 NotebookLM 連結設定</h4>
+            <p class="text-muted small mb-0">資料庫即時同步至 Firebase Firestore</p>
+          </div>
+          <div>
+            <span class="current-filter-badge" id="currentEditBadge">
+              <i class="bi bi-tag-fill"></i> 載入中...
+            </span>
+          </div>
+        </div>
+
+        <div class="alert alert-primary bg-opacity-10 border-primary border-opacity-25 py-2 px-3 small mb-4 d-flex align-items-center gap-2">
+          <i class="bi bi-cloud-check-fill text-primary fs-5"></i>
+          <div>完成連結編輯後點擊「<strong>儲存變更至 Firestore</strong>」，全體學生畫面將**毫秒級即時更新**！</div>
+        </div>
+        
+        <!-- 各科輸入清單 -->
+        <div id="adminSubjectInputs">
+          <div class="text-center text-muted py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="small mt-2">載入設定中...</p>
+          </div>
+        </div>
+        
+        <!-- 底部儲存列 -->
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+          <div id="saveStatus" class="fw-bold small"></div>
+          <button class="btn btn-primary px-4 py-2 fw-bold shadow-sm rounded-pill" id="saveBtn" onclick="saveLinks()">
+            <i class="bi bi-cloud-arrow-up-fill me-2"></i> 儲存變更至 Firestore
+          </button>
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<script>
+  // ════════════════════════════════════════════════════════════════
+  // 1. Firebase 初始化
+  // ════════════════════════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey: "AIzaSyBYypcI0CVLvoLqcSOQzq_0oNEoK01c6Gs",
+    authDomain: "fsjh-exam-ai.firebaseapp.com",
+    projectId: "fsjh-exam-ai",
+    storageBucket: "fsjh-exam-ai.firebasestorage.app",
+    messagingSenderId: "412616584298",
+    appId: "1:412616584298:web:bb03b4a9fe9eb36a4eee13",
+    measurementId: "G-C00H3J2DEE"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  let AppData = {
+    years: [],
+    examTypes: [],
+    publishers: [],
+    subjects: ['國文', '英文', '數學', '社會', '自然'],
+    links: {}
+  };
+
+  const subjectBadges = {
+    '國文': { bg: '#f3e8ff', text: '#9333ea', icon: 'bi-journal-richtext' },
+    '英文': { bg: '#fee2e2', text: '#dc2626', icon: 'bi-translate' },
+    '數學': { bg: '#dbeafe', text: '#2563eb', icon: 'bi-calculator-fill' },
+    '社會': { bg: '#fef3c7', text: '#d97706', icon: 'bi-globe-americas' },
+    '自然': { bg: '#d1fae5', text: '#059669', icon: 'bi-radioactive' }
+  };
+
+  function loginAdmin() {
+    const u = document.getElementById('adminUsername').value.trim().toLowerCase();
+    const p = document.getElementById('adminPassword').value.trim();
+    const err = document.getElementById('adminLoginError');
+    const btn = document.getElementById('adminLoginBtn');
+    
+    if(!u || !p) { err.textContent = '請輸入帳號與密碼'; return; }
+    
+    if (u === 'admin' && p === 'fsjh9999') {
+      document.getElementById('adminLoginSection').style.setProperty('display', 'none', 'important');
+      document.getElementById('adminDashboardSection').style.setProperty('display', 'block', 'important');
+      fetchFirestoreData();
+    } else {
+      err.textContent = '帳號或密碼錯誤';
+    }
+  }
+
+  function fetchFirestoreData() {
+    db.collection('exam_links').onSnapshot((snapshot) => {
+      const yearsSet = new Set();
+      const examTypesSet = new Set();
+      const publishersSet = new Set();
+      const linksMap = {};
+
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const y = String(d.year || '').trim();
+        const t = String(d.examType || '').trim();
+        const p = String(d.publisher || '').trim();
+        const s = String(d.subject || '').trim();
+        const url = String(d.url || '').trim();
+
+        if (y) yearsSet.add(y);
+        if (t) examTypesSet.add(t);
+        if (p) publishersSet.add(p);
+        if (y && t && p && s && url) {
+          const key = `${y}_${t}_${p}_${s}`;
+          linksMap[key] = url;
+        }
+      });
+
+      const sortedYears = Array.from(yearsSet).sort((a, b) => {
+        const numA = parseFloat(a);
+        const numB = parseFloat(b);
+        if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
+        return a.localeCompare(b, 'zh-Hant');
+      });
+
+      AppData.years = sortedYears;
+      AppData.examTypes = Array.from(examTypesSet);
+      AppData.publishers = Array.from(publishersSet);
+      AppData.links = linksMap;
+
+      prepareAdminView();
+    });
+  }
+
+  function prepareAdminView() {
+    const yearSelect = document.getElementById('adminYearSelect');
+    const currentYear = yearSelect.value;
+    yearSelect.innerHTML = '';
+    AppData.years.forEach((y, i) => {
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      if (y === currentYear || (!currentYear && i===0)) opt.selected = true;
+      yearSelect.appendChild(opt);
+    });
+
+    const examTypeSelect = document.getElementById('adminExamTypeSelect');
+    const currentType = examTypeSelect.value;
+    examTypeSelect.innerHTML = '';
+    AppData.examTypes.forEach((t, i) => {
+      const opt = document.createElement('option');
+      opt.value = t; opt.textContent = t;
+      if (t === currentType || (!currentType && i===0)) opt.selected = true;
+      examTypeSelect.appendChild(opt);
+    });
+
+    const publisherSelect = document.getElementById('adminPublisherSelect');
+    const currentPub = publisherSelect.value;
+    publisherSelect.innerHTML = '';
+    AppData.publishers.forEach((p, i) => {
+      const opt = document.createElement('option');
+      opt.value = p; opt.textContent = p.endsWith('版') ? p : p + '版';
+      if (p === currentPub || (!currentPub && i===0)) opt.selected = true;
+      publisherSelect.appendChild(opt);
+    });
+
+    loadAdminLinks();
+  }
+
+  function loadAdminLinks() {
+    const selYear = document.getElementById('adminYearSelect').value;
+    const selExamType = document.getElementById('adminExamTypeSelect').value;
+    const selPub = document.getElementById('adminPublisherSelect').value;
+    
+    const pDisplay = selPub.endsWith('版') ? selPub : selPub + '版';
+    document.getElementById('currentEditBadge').innerHTML = `<i class="bi bi-tag-fill me-1"></i> ${selYear || '未選擇'} · ${selExamType || '未選擇'} · ${pDisplay || '未選擇'}`;
+    const container = document.getElementById('adminSubjectInputs');
+    container.innerHTML = '';
+
+    if (!selYear || !selExamType || !selPub) {
+      container.innerHTML = '<div class="text-muted small py-4 text-center">無資料可編輯，請先於左側新增學年度、考試類別與書商。</div>';
+      return;
+    }
+
+    AppData.subjects.forEach(sub => {
+      const key = `${selYear}_${selExamType}_${selPub}_${sub}`;
+      const currentUrl = AppData.links[key] || '';
+      const bInfo = subjectBadges[sub] || { bg: '#f1f5f9', text: '#475569', icon: 'bi-book' };
+
+      const div = document.createElement('div');
+      div.className = 'subject-input-row';
+      div.innerHTML = `
+        <div class="d-flex flex-wrap align-items-center gap-3">
+          <div class="subject-badge-pill" style="background: ${bInfo.bg}; color: ${bInfo.text};">
+            <i class="bi ${bInfo.icon}"></i> ${sub}
+          </div>
+          <div class="flex-grow-1">
+            <input type="url" class="form-control admin-link-input" data-subject="${sub}" 
+                   value="${currentUrl}" id="url_input_${sub}" oninput="updateTestBtn('${sub}')">
+          </div>
+          <div>
+            <button class="btn btn-outline-secondary btn-sm" id="test_btn_${sub}" onclick="testLink('${sub}')" 
+                    ${currentUrl ? '' : 'disabled'}>
+              <i class="bi bi-box-arrow-up-right"></i> 測試連結
+            </button>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+    document.getElementById('saveStatus').textContent = '';
+  }
+
+  function updateTestBtn(sub) {
+    const input = document.getElementById(`url_input_${sub}`);
+    const btn = document.getElementById(`test_btn_${sub}`);
+    if (input && btn) {
+      btn.disabled = !input.value.trim();
+    }
+  }
+
+  function testLink(sub) {
+    const input = document.getElementById(`url_input_${sub}`);
+    if (input && input.value.trim()) {
+      window.open(input.value.trim(), '_blank');
+    }
+  }
+
+  function addYear() {
+    const val = document.getElementById('newYearInput').value.trim();
+    if (val && !AppData.years.includes(val)) {
+      AppData.years.unshift(val);
+      document.getElementById('newYearInput').value = '';
+      prepareAdminView();
+      document.getElementById('adminYearSelect').value = val;
+      loadAdminLinks();
+    }
+  }
+
+  function addExamType() {
+    const val = document.getElementById('newExamTypeInput').value.trim();
+    if (val && !AppData.examTypes.includes(val)) {
+      AppData.examTypes.push(val);
+      document.getElementById('newExamTypeInput').value = '';
+      prepareAdminView();
+      document.getElementById('adminExamTypeSelect').value = val;
+      loadAdminLinks();
+    }
+  }
+
+  function addPublisher() {
+    const val = document.getElementById('newPublisherInput').value.trim();
+    if (val && !AppData.publishers.includes(val)) {
+      AppData.publishers.push(val);
+      document.getElementById('newPublisherInput').value = '';
+      prepareAdminView();
+      document.getElementById('adminPublisherSelect').value = val;
+      loadAdminLinks();
+    }
+  }
+
+  async function saveLinks() {
+    const saveBtn = document.getElementById('saveBtn');
+    const statusLabel = document.getElementById('saveStatus');
+    const selYear = document.getElementById('adminYearSelect').value;
+    const selExamType = document.getElementById('adminExamTypeSelect').value;
+    const selPub = document.getElementById('adminPublisherSelect').value;
+
+    if (!selYear || !selExamType || !selPub) {
+      alert('請先選擇或新增學年度、考試類別與書商');
+      return;
+    }
+
+    const inputs = document.querySelectorAll('.admin-link-input');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> 寫入 Firestore 中...';
+    statusLabel.className = 'text-muted small fw-bold';
+    statusLabel.textContent = '正在同步至雲端...';
+
+    try {
+      const batch = db.batch();
+      inputs.forEach(input => {
+        const sub = input.dataset.subject;
+        const val = input.value.trim();
+        const docId = `${selYear}_${selExamType}_${selPub}_${sub}`;
+        const ref = db.collection('exam_links').doc(docId);
+        
+        batch.set(ref, {
+          year: selYear,
+          examType: selExamType,
+          publisher: selPub,
+          subject: sub,
+          url: val,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      });
+
+      await batch.commit();
+
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> 儲存變更至 Firestore';
+      statusLabel.className = 'text-success small fw-bold';
+      statusLabel.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> ✓ 已即時同步至 Firestore！';
+    } catch (e) {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> 儲存變更至 Firestore';
+      statusLabel.className = 'text-danger small fw-bold';
+      statusLabel.textContent = '儲存失敗：' + e.message;
+    }
+  }
+
+  function logout() {
+    document.getElementById('adminDashboardSection').style.setProperty('display', 'none', 'important');
+    document.getElementById('adminLoginSection').style.setProperty('display', 'flex', 'important');
+  }
+</script>
+
+</body>
+</html>
