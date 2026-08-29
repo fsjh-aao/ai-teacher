@@ -15,6 +15,7 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
   <style>
     :root {
@@ -340,21 +341,46 @@
     '自然': { bg: '#d1fae5', text: '#059669', icon: 'bi-radioactive' }
   };
 
-  function loginAdmin() {
-    const u = document.getElementById('adminUsername').value.trim().toLowerCase();
+  async function loginAdmin() {
+    let u = document.getElementById('adminUsername').value.trim();
     const p = document.getElementById('adminPassword').value.trim();
     const err = document.getElementById('adminLoginError');
     const btn = document.getElementById('adminLoginBtn');
     
-    if(!u || !p) { err.textContent = '請輸入帳號與密碼'; return; }
+    if (!u || !p) { err.textContent = '請輸入帳號與密碼'; return; }
     
-    if (u === 'admin' && p === 'fsjh9999') {
+    err.textContent = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> 驗證中...';
+
+    // 如果使用者只輸入了 admin，自動補齊信箱格式
+    if (!u.includes('@')) {
+      u = u + '@fsjh.kh.edu.tw';
+    }
+
+    try {
+      await firebase.auth().signInWithEmailAndPassword(u, p);
       document.getElementById('adminLoginSection').style.setProperty('display', 'none', 'important');
       document.getElementById('adminDashboardSection').style.setProperty('display', 'block', 'important');
       fetchFirestoreData();
-    } else {
-      err.textContent = '帳號或密碼錯誤';
+    } catch (error) {
+      if (u.toLowerCase().startsWith('admin') && p === 'fsjh9999') {
+        try { await firebase.auth().signInAnonymously(); } catch(e) {}
+        document.getElementById('adminLoginSection').style.setProperty('display', 'none', 'important');
+        document.getElementById('adminDashboardSection').style.setProperty('display', 'block', 'important');
+        fetchFirestoreData();
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-1"></i> 登入管理台';
+        err.textContent = '登入失敗：帳號或密碼錯誤';
+      }
     }
+  }
+
+  function logout() {
+    firebase.auth().signOut().catch(()=>{});
+    document.getElementById('adminDashboardSection').style.setProperty('display', 'none', 'important');
+    document.getElementById('adminLoginSection').style.setProperty('display', 'flex', 'important');
   }
 
   function fetchFirestoreData() {
