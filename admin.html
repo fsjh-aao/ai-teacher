@@ -234,6 +234,9 @@
         </div>
         <div class="d-flex gap-1 mb-2">
           <select class="form-select form-select-sm" id="adminYearSelect" onchange="loadAdminLinks()"></select>
+          <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="editCurrentYear()" title="編輯/重新命名選取的學年度">
+            <i class="bi bi-pencil-square"></i>
+          </button>
           <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentYear()" title="刪除選取的學年度">
             <i class="bi bi-trash3"></i>
           </button>
@@ -252,6 +255,9 @@
         </div>
         <div class="d-flex gap-1 mb-2">
           <select class="form-select form-select-sm" id="adminExamTypeSelect" onchange="loadAdminLinks()"></select>
+          <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="editCurrentExamType()" title="編輯/重新命名選取的考試類別">
+            <i class="bi bi-pencil-square"></i>
+          </button>
           <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentExamType()" title="刪除選取的考試類別">
             <i class="bi bi-trash3"></i>
           </button>
@@ -270,6 +276,9 @@
         </div>
         <div class="d-flex gap-1 mb-2">
           <select class="form-select form-select-sm" id="adminPublisherSelect" onchange="loadAdminLinks()"></select>
+          <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="editCurrentPublisher()" title="編輯/重新命名選取的書商版本">
+            <i class="bi bi-pencil-square"></i>
+          </button>
           <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentPublisher()" title="刪除選取的書商版本">
             <i class="bi bi-trash3"></i>
           </button>
@@ -596,7 +605,131 @@
   }
 
   // ════════════════════════════════════════════════════════════════
-  // 4. 刪除相關功能 (同步清除 Firestore 雲端資料)
+  // 4. 編輯與重新命名功能 (同步遷移 Firestore 雲端資料)
+  // ════════════════════════════════════════════════════════════════
+
+  // 重新命名選取的學年度
+  async function editCurrentYear() {
+    const oldYear = document.getElementById('adminYearSelect').value;
+    if (!oldYear) return;
+
+    const newYear = prompt(`請輸入學年度「${oldYear}」的新名稱：`, oldYear);
+    if (!newYear || newYear.trim() === '' || newYear.trim() === oldYear) return;
+    const finalYear = newYear.trim();
+
+    try {
+      const snapshot = await db.collection('exam_links').where('year', '==', oldYear).get();
+      const batch = db.batch();
+
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const newDocId = `${finalYear}_${d.examType}_${d.publisher}_${d.subject}`;
+        const newRef = db.collection('exam_links').doc(newDocId);
+        
+        batch.set(newRef, {
+          ...d,
+          year: finalYear,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+
+      const idx = AppData.years.indexOf(oldYear);
+      if (idx !== -1) AppData.years[idx] = finalYear;
+      prepareAdminView();
+      document.getElementById('adminYearSelect').value = finalYear;
+      loadAdminLinks();
+
+      alert(`已成功將學年度「${oldYear}」重新命名為「${finalYear}」！`);
+    } catch (e) {
+      alert('重新命名學年度失敗：' + e.message);
+    }
+  }
+
+  // 重新命名選取的考試類別
+  async function editCurrentExamType() {
+    const oldType = document.getElementById('adminExamTypeSelect').value;
+    if (!oldType) return;
+
+    const newType = prompt(`請輸入考試類別「${oldType}」的新名稱：`, oldType);
+    if (!newType || newType.trim() === '' || newType.trim() === oldType) return;
+    const finalType = newType.trim();
+
+    try {
+      const snapshot = await db.collection('exam_links').where('examType', '==', oldType).get();
+      const batch = db.batch();
+
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const newDocId = `${d.year}_${finalType}_${d.publisher}_${d.subject}`;
+        const newRef = db.collection('exam_links').doc(newDocId);
+        
+        batch.set(newRef, {
+          ...d,
+          examType: finalType,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+
+      const idx = AppData.examTypes.indexOf(oldType);
+      if (idx !== -1) AppData.examTypes[idx] = finalType;
+      prepareAdminView();
+      document.getElementById('adminExamTypeSelect').value = finalType;
+      loadAdminLinks();
+
+      alert(`已成功將考試類別「${oldType}」重新命名為「${finalType}」！`);
+    } catch (e) {
+      alert('重新命名考試類別失敗：' + e.message);
+    }
+  }
+
+  // 重新命名選取的書商版本
+  async function editCurrentPublisher() {
+    const oldPub = document.getElementById('adminPublisherSelect').value;
+    if (!oldPub) return;
+
+    const newPub = prompt(`請輸入書商版本「${oldPub}」的新名稱：`, oldPub);
+    if (!newPub || newPub.trim() === '' || newPub.trim() === oldPub) return;
+    const finalPub = newPub.trim();
+
+    try {
+      const snapshot = await db.collection('exam_links').where('publisher', '==', oldPub).get();
+      const batch = db.batch();
+
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const newDocId = `${d.year}_${d.examType}_${finalPub}_${d.subject}`;
+        const newRef = db.collection('exam_links').doc(newDocId);
+        
+        batch.set(newRef, {
+          ...d,
+          publisher: finalPub,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+
+      const idx = AppData.publishers.indexOf(oldPub);
+      if (idx !== -1) AppData.publishers[idx] = finalPub;
+      prepareAdminView();
+      document.getElementById('adminPublisherSelect').value = finalPub;
+      loadAdminLinks();
+
+      alert(`已成功將書商版本「${oldPub}」重新命名為「${finalPub}」！`);
+    } catch (e) {
+      alert('重新命名書商版本失敗：' + e.message);
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // 5. 刪除相關功能 (同步清除 Firestore 雲端資料)
   // ════════════════════════════════════════════════════════════════
 
   // 刪除整組當前試題連結
