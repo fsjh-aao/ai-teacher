@@ -237,9 +237,6 @@
           <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="editCurrentYear()" title="編輯/重新命名選取的學年度">
             <i class="bi bi-pencil-square"></i>
           </button>
-          <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentYear()" title="刪除選取的學年度">
-            <i class="bi bi-trash3"></i>
-          </button>
         </div>
         <div class="input-group input-group-sm">
           <input type="text" id="newYearInput" class="form-control" onkeydown="if(event.key==='Enter') addYear()" placeholder="例: 115">
@@ -258,9 +255,6 @@
           <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="editCurrentExamType()" title="編輯/重新命名選取的考試類別">
             <i class="bi bi-pencil-square"></i>
           </button>
-          <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentExamType()" title="刪除選取的考試類別">
-            <i class="bi bi-trash3"></i>
-          </button>
         </div>
         <div class="input-group input-group-sm">
           <input type="text" id="newExamTypeInput" class="form-control" onkeydown="if(event.key==='Enter') addExamType()" placeholder="例: 模擬考">
@@ -278,9 +272,6 @@
           <select class="form-select form-select-sm" id="adminPublisherSelect" onchange="loadAdminLinks()"></select>
           <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="editCurrentPublisher()" title="編輯/重新命名選取的書商版本">
             <i class="bi bi-pencil-square"></i>
-          </button>
-          <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentPublisher()" title="刪除選取的書商版本">
-            <i class="bi bi-trash3"></i>
           </button>
         </div>
         <div class="input-group input-group-sm">
