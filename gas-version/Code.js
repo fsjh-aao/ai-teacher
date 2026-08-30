@@ -89,7 +89,7 @@ function verifyAdmin(username, password) {
   const p = String(password || '').trim();
 
   // 預設容錯驗證 (不分大小寫)
-  if (u === 'admin' && p === 'fsjh9999') {
+  if (u === 'admin' && p === 'fsjh3501581') {
     return { success: true };
   }
 

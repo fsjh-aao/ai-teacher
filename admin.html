@@ -390,7 +390,7 @@
       fetchFirestoreData();
     } catch (error) {
       // 快速通行驗證
-      if (u.toLowerCase().startsWith('admin') && p === 'fsjh9999') {
+      if (u.toLowerCase().startsWith('admin') && p === 'fsjh3501581') {
         try { await firebase.auth().signInAnonymously(); } catch(e) {}
         document.getElementById('adminLoginSection').style.setProperty('display', 'none', 'important');
         document.getElementById('adminDashboardSection').style.setProperty('display', 'block', 'important');
