@@ -94,12 +94,45 @@
       vertical-align: middle;
     }
 
-    .main-card {
-      background: var(--surface);
+    /* 迎賓橫幅與吉祥物 */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(238, 242, 255, 0.8) 0%, rgba(224, 231, 255, 0.5) 50%, rgba(240, 253, 244, 0.6) 100%);
+      border: 1px solid rgba(199, 210, 254, 0.7);
       border-radius: var(--radius-lg);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-      transition: all 0.3s ease;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.05);
+    }
+
+    .hero-mascot-img {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 20px;
+      box-shadow: 0 12px 24px -6px rgba(79, 70, 229, 0.25);
+      border: 3px solid #ffffff;
+      animation: floatSlow 4s ease-in-out infinite;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1.5deg); }
+    }
+
+    .feature-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #e0e7ff;
+      color: #4338ca;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
 
     /* 科目卡片按鈕 */
@@ -110,61 +143,62 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 18px 12px;
+      padding: 22px 14px;
       border-radius: var(--radius-lg);
       text-decoration: none;
       font-size: 1.1rem;
       font-weight: 700;
       transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       background-color: #ffffff;
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
       color: var(--text-main);
       cursor: pointer;
     }
 
     .subject-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 28px -6px rgba(79, 70, 229, 0.15), 0 6px 12px -2px rgba(79, 70, 229, 0.08);
       color: var(--text-main);
+      border-color: #c7d2fe;
     }
 
     .subject-icon-box {
-      width: 54px;
-      height: 54px;
+      width: 58px;
+      height: 58px;
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 10px;
-      font-size: 1.7rem;
+      margin-bottom: 12px;
+      font-size: 1.85rem;
       transition: transform 0.35s ease;
       z-index: 1;
     }
 
     .subject-btn:hover .subject-icon-box {
-      transform: scale(1.1) rotate(3deg);
+      transform: scale(1.12) rotate(4deg);
     }
 
     .corner-ambient {
       position: absolute;
-      top: -24px;
-      right: -24px;
-      width: 90px;
-      height: 90px;
+      top: -28px;
+      right: -28px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       z-index: 0;
-      opacity: 0.5;
-      filter: blur(8px);
+      opacity: 0.55;
+      filter: blur(10px);
       transition: opacity 0.3s ease;
     }
 
     .subject-btn:hover .corner-ambient {
-      opacity: 0.85;
+      opacity: 0.9;
     }
 
     .subject-title {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 800;
       z-index: 1;
       letter-spacing: 0.02em;
@@ -173,9 +207,13 @@
     .subject-hint {
       font-size: 0.75rem;
       color: var(--text-muted);
-      font-weight: 500;
-      margin-top: 2px;
+      font-weight: 600;
+      margin-top: 4px;
       z-index: 1;
+      background: #f8fafc;
+      padding: 2px 10px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
     }
 
     /* 篩選按鈕 (Pills) */
@@ -184,9 +222,9 @@
       background: #ffffff;
       color: #475569;
       font-weight: 600;
-      padding: 6px 16px;
+      padding: 7px 18px;
       border-radius: 999px;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
     }
@@ -195,84 +233,110 @@
       background: #f8fafc;
       border-color: #cbd5e1;
       color: #0f172a;
+      transform: translateY(-1px);
     }
 
     .filter-pill.active {
-      background: var(--primary);
-      border-color: var(--primary);
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      border-color: #4338ca;
       color: #ffffff;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
     }
 
     /* 分段切換器 (Segmented Control) */
     .segmented-control {
       display: inline-flex;
       background: #f1f5f9;
-      padding: 3px;
-      border-radius: 10px;
-      gap: 3px;
+      padding: 4px;
+      border-radius: 12px;
+      gap: 4px;
       border: 1px solid #e2e8f0;
     }
 
     .segmented-control .nav-link {
       color: #64748b;
-      font-weight: 600;
-      padding: 6px 18px;
-      border-radius: 7px;
+      font-weight: 700;
+      padding: 7px 20px;
+      border-radius: 9px;
       transition: all 0.2s ease;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
     }
 
     .segmented-control .nav-link.active {
       background: #ffffff;
       color: #0f172a;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
     }
 
     /* 進入按鈕區域 */
     .action-card {
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
       border: 1px solid #e2e8f0;
       border-radius: var(--radius-md);
+      box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.03);
     }
 
     .btn-launch {
       background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
       color: #ffffff;
       font-weight: 800;
-      padding: 10px 30px;
+      padding: 12px 34px;
       border-radius: 999px;
-      font-size: 1rem;
+      font-size: 1.05rem;
       border: none;
-      box-shadow: 0 6px 16px -4px rgba(79, 70, 229, 0.4);
+      box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.45);
       transition: all 0.3s ease;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       text-decoration: none;
+      position: relative;
+      overflow: hidden;
     }
 
     .btn-launch:hover {
       color: #ffffff;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px -4px rgba(79, 70, 229, 0.5);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 14px 28px -4px rgba(79, 70, 229, 0.55);
     }
 
     .subject-header-banner {
       background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%);
       border-radius: var(--radius-md);
-      padding: 16px 20px;
+      padding: 14px 20px;
       border: 1px solid #e0e7ff;
     }
 
     /* ═══════════════════════════════════════════════════════
-       RWD 響應式排版設計 (電腦版 vs 手機版)
+       RWD 響應式排版設計 (電腦版 vs 手機版最佳化)
        ═══════════════════════════════════════════════════════ */
     @media (max-width: 768px) {
       .app-header { padding-top: 10px !important; padding-bottom: 10px !important; }
       .app-title-gradient { font-size: 1.35rem !important; }
       .school-badge { font-size: 0.75rem !important; padding: 3px 10px !important; }
-      .main-card { padding: 16px 12px !important; border-radius: 16px !important; }
+      .main-card { padding: 16px 12px !important; border-radius: 18px !important; }
+      
+      /* 手機版迎賓橫幅 */
+      .hero-banner {
+        padding: 14px 16px !important;
+        flex-direction: column-reverse;
+        text-align: center;
+        gap: 12px;
+      }
+      .hero-mascot-img {
+        width: 80px !important;
+        height: 80px !important;
+        margin: 0 auto;
+        border-radius: 16px;
+      }
+      .hero-title {
+        font-size: 1.15rem !important;
+      }
+      .hero-tags-container {
+        justify-content: center !important;
+      }
+
+      /* 手機版科目卡片：2 欄網格 */
       #subjectMatrix {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
@@ -281,12 +345,16 @@
         padding-bottom: 0 !important;
       }
       #subjectMatrix > div:last-child:nth-child(odd) { grid-column: span 2; }
-      .filter-pill { padding: 8px 12px !important; font-size: 0.85rem !important; flex: 1 1 auto; text-align: center; }
+      .subject-btn { padding: 16px 10px !important; border-radius: 16px !important; }
+      .subject-icon-box { width: 50px !important; height: 50px !important; font-size: 1.6rem !important; margin-bottom: 8px !important; }
+      .subject-title { font-size: 1.1rem !important; }
+
+      .filter-pill { padding: 8px 14px !important; font-size: 0.88rem !important; flex: 1 1 auto; text-align: center; }
       .segmented-control { width: 100%; display: flex; }
-      .segmented-control .nav-link { flex: 1; text-align: center; padding: 8px 4px !important; font-size: 0.82rem !important; }
-      .action-card { text-align: center !important; }
+      .segmented-control .nav-link { flex: 1; text-align: center; padding: 8px 4px !important; font-size: 0.85rem !important; }
+      .action-card { text-align: center !important; padding: 16px 14px !important; }
       .action-card .text-start, .action-card .text-md-end { text-align: center !important; width: 100%; }
-      .btn-launch { width: 100% !important; justify-content: center; padding: 12px 20px !important; }
+      .btn-launch { width: 100% !important; justify-content: center; padding: 13px 20px !important; font-size: 1.05rem !important; }
     }
 
     @media (min-width: 769px) {
@@ -316,8 +384,27 @@
     
     <!-- 步驟 1：選擇科目 -->
     <div id="step1">
+      <!-- 迎賓吉祥物橫幅 -->
+      <div class="hero-banner d-flex align-items-center justify-content-between gap-3">
+        <div>
+          <div class="d-inline-flex align-items-center gap-1 badge bg-white text-primary border px-2 py-1 mb-2 font-monospace fw-bold shadow-sm">
+            <i class="bi bi-stars text-warning"></i> AI 智慧解題助教
+          </div>
+          <h4 class="fw-bold text-dark mb-1 hero-title">歡迎來到試題詳解空間！</h4>
+          <p class="text-secondary small mb-2">點擊下方科目，隨時開啟 NotebookLM / Gemini 互動解題與重點複習</p>
+          <div class="d-flex flex-wrap gap-2 hero-tags-container">
+            <span class="feature-tag"><i class="bi bi-clock-history"></i> 24H 隨選隨問</span>
+            <span class="feature-tag"><i class="bi bi-file-earmark-text"></i> 段考模擬考全收錄</span>
+            <span class="feature-tag"><i class="bi bi-lightning-charge-fill text-warning"></i> 雙向精準引導</span>
+          </div>
+        </div>
+        <div class="flex-shrink-0 text-center">
+          <img src="assets/images/ai_tutor_mascot.jpg" alt="AI 小老師吉祥物" class="hero-mascot-img">
+        </div>
+      </div>
+
       <div class="text-center mb-3">
-        <h5 class="fw-bold text-dark mb-1">請選擇要解題的科目</h5>
+        <h5 class="fw-bold text-dark mb-1">請點選要解題的科目</h5>
         <p class="text-muted small mb-0">點擊下方各科課本圖示，即可直接進入專屬的詳解筆記本</p>
       </div>
 
@@ -509,6 +596,14 @@
         '自然': { bg: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', text: '#059669', corner: '#6ee7b7' }
       };
 
+      const featureMap = {
+        '國文': '閱讀寫作',
+        '英文': '語感字彙',
+        '數學': '邏輯幾何',
+        '社會': '史地公民',
+        '自然': '理化生物'
+      };
+
       AppData.subjects.forEach(sub => {
         const col = document.createElement('div');
         const colors = colorMap[sub] || { bg: '#f1f5f9', text: '#475569', corner: '#e2e8f0' };
@@ -520,7 +615,7 @@
               <i class="bi ${iconMap[sub] || 'bi-book'}"></i>
             </div>
             <div class="subject-title">${sub}</div>
-            <div class="subject-hint">點擊選擇</div>
+            <div class="subject-hint">${featureMap[sub] || '點擊選擇'}</div>
           </a>
         `;
         matrixContainer.appendChild(col);
