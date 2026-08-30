@@ -299,10 +299,13 @@
             <h4 class="fw-bold text-dark mb-1">各科 NotebookLM 連結設定</h4>
             <p class="text-muted small mb-0">資料庫即時同步至 Firebase Firestore</p>
           </div>
-          <div>
+          <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="current-filter-badge" id="currentEditBadge">
               <i class="bi bi-tag-fill"></i> 載入中...
             </span>
+            <button class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-semibold shadow-sm" onclick="deleteCurrentCombo()" title="刪除此組合當前的 5 科試題連結">
+              <i class="bi bi-trash3 me-1"></i> 刪除此組 5 科連結
+            </button>
           </div>
         </div>
 
