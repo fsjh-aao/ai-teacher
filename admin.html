@@ -228,8 +228,16 @@
 
       <!-- 條件 1: 學年度 -->
       <div class="sidebar-card">
-        <div class="sidebar-section-title"><i class="bi bi-calendar3 me-1 text-primary"></i> 1. 學年度</div>
-        <select class="form-select form-select-sm mb-2" id="adminYearSelect" onchange="loadAdminLinks()"></select>
+        <div class="sidebar-section-title d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-calendar3 me-1 text-primary"></i> 1. 學年度</span>
+          <span class="badge bg-light text-muted border font-monospace" id="yearCountBadge">0</span>
+        </div>
+        <div class="d-flex gap-1 mb-2">
+          <select class="form-select form-select-sm" id="adminYearSelect" onchange="loadAdminLinks()"></select>
+          <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentYear()" title="刪除選取的學年度">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
         <div class="input-group input-group-sm">
           <input type="text" id="newYearInput" class="form-control" onkeydown="if(event.key==='Enter') addYear()" placeholder="例: 115">
           <button class="btn btn-outline-primary" onclick="addYear()">+ 新增</button>
@@ -238,8 +246,16 @@
 
       <!-- 條件 2: 考試類別 -->
       <div class="sidebar-card">
-        <div class="sidebar-section-title"><i class="bi bi-card-checklist me-1 text-primary"></i> 2. 考試類別</div>
-        <select class="form-select form-select-sm mb-2" id="adminExamTypeSelect" onchange="loadAdminLinks()"></select>
+        <div class="sidebar-section-title d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-card-checklist me-1 text-primary"></i> 2. 考試類別</span>
+          <span class="badge bg-light text-muted border font-monospace" id="examTypeCountBadge">0</span>
+        </div>
+        <div class="d-flex gap-1 mb-2">
+          <select class="form-select form-select-sm" id="adminExamTypeSelect" onchange="loadAdminLinks()"></select>
+          <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentExamType()" title="刪除選取的考試類別">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
         <div class="input-group input-group-sm">
           <input type="text" id="newExamTypeInput" class="form-control" onkeydown="if(event.key==='Enter') addExamType()" placeholder="例: 模擬考">
           <button class="btn btn-outline-primary" onclick="addExamType()">+ 新增</button>
@@ -248,8 +264,16 @@
 
       <!-- 條件 3: 書商版本 -->
       <div class="sidebar-card">
-        <div class="sidebar-section-title"><i class="bi bi-book me-1 text-primary"></i> 3. 書商版本</div>
-        <select class="form-select form-select-sm mb-2" id="adminPublisherSelect" onchange="loadAdminLinks()"></select>
+        <div class="sidebar-section-title d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-book me-1 text-primary"></i> 3. 書商版本</span>
+          <span class="badge bg-light text-muted border font-monospace" id="publisherCountBadge">0</span>
+        </div>
+        <div class="d-flex gap-1 mb-2">
+          <select class="form-select form-select-sm" id="adminPublisherSelect" onchange="loadAdminLinks()"></select>
+          <button class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="deleteCurrentPublisher()" title="刪除選取的書商版本">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
         <div class="input-group input-group-sm">
           <input type="text" id="newPublisherInput" class="form-control" onkeydown="if(event.key==='Enter') addPublisher()" placeholder="例: 全國">
           <button class="btn btn-outline-primary" onclick="addPublisher()">+ 新增</button>
@@ -275,10 +299,13 @@
             <h4 class="fw-bold text-dark mb-1">各科 NotebookLM 連結設定</h4>
             <p class="text-muted small mb-0">資料庫即時同步至 Firebase Firestore</p>
           </div>
-          <div>
+          <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="current-filter-badge" id="currentEditBadge">
               <i class="bi bi-tag-fill"></i> 載入中...
             </span>
+            <button class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-bold" onclick="deleteCurrentCombo()" title="刪除此組合所有 5 科連結">
+              <i class="bi bi-trash3-fill me-1"></i> 刪除此組全部連結
+            </button>
           </div>
         </div>
 
@@ -423,6 +450,14 @@
   }
 
   function prepareAdminView() {
+    // 更新計數徽章
+    const yBadge = document.getElementById('yearCountBadge');
+    if (yBadge) yBadge.textContent = AppData.years.length;
+    const eBadge = document.getElementById('examTypeCountBadge');
+    if (eBadge) eBadge.textContent = AppData.examTypes.length;
+    const pBadge = document.getElementById('publisherCountBadge');
+    if (pBadge) pBadge.textContent = AppData.publishers.length;
+
     const yearSelect = document.getElementById('adminYearSelect');
     const currentYear = yearSelect.value;
     yearSelect.innerHTML = '';
@@ -485,12 +520,15 @@
           </div>
           <div class="flex-grow-1">
             <input type="url" class="form-control admin-link-input" data-subject="${sub}" 
-                   value="${currentUrl}" id="url_input_${sub}" oninput="updateTestBtn('${sub}')">
+                   value="${currentUrl}" id="url_input_${sub}" oninput="updateTestBtn('${sub}')" placeholder="請貼上 NotebookLM 連結 (留空則為建置中)">
           </div>
-          <div>
+          <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary btn-sm" id="test_btn_${sub}" onclick="testLink('${sub}')" 
-                    ${currentUrl ? '' : 'disabled'}>
-              <i class="bi bi-box-arrow-up-right"></i> 測試連結
+                    ${currentUrl ? '' : 'disabled'} title="測試開啟連結">
+              <i class="bi bi-box-arrow-up-right"></i> 測試
+            </button>
+            <button class="btn btn-outline-danger btn-sm" onclick="clearSubjectLink('${sub}')" title="清空此科目連結">
+              <i class="bi bi-eraser-fill"></i>
             </button>
           </div>
         </div>
@@ -498,6 +536,15 @@
       container.appendChild(div);
     });
     document.getElementById('saveStatus').textContent = '';
+  }
+
+  function clearSubjectLink(sub) {
+    const input = document.getElementById(`url_input_${sub}`);
+    if (input) {
+      input.value = '';
+      updateTestBtn(sub);
+      input.focus();
+    }
   }
 
   function updateTestBtn(sub) {
@@ -545,6 +592,122 @@
       prepareAdminView();
       document.getElementById('adminPublisherSelect').value = val;
       loadAdminLinks();
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // 4. 刪除相關功能 (同步清除 Firestore 雲端資料)
+  // ════════════════════════════════════════════════════════════════
+
+  // 刪除整組當前試題連結
+  async function deleteCurrentCombo() {
+    const selYear = document.getElementById('adminYearSelect').value;
+    const selExamType = document.getElementById('adminExamTypeSelect').value;
+    const selPub = document.getElementById('adminPublisherSelect').value;
+
+    if (!selYear || !selExamType || !selPub) return;
+
+    const pDisplay = selPub.endsWith('版') ? selPub : selPub + '版';
+    if (!confirm(`確定要刪除「${selYear} · ${selExamType} · ${pDisplay}」這組的所有試題連結嗎？\n此操作將從雲端資料庫中移除相關紀錄。`)) {
+      return;
+    }
+
+    const statusLabel = document.getElementById('saveStatus');
+    statusLabel.className = 'text-muted small fw-bold';
+    statusLabel.textContent = '正在自雲端刪除...';
+
+    try {
+      const batch = db.batch();
+      AppData.subjects.forEach(sub => {
+        const docId = `${selYear}_${selExamType}_${selPub}_${sub}`;
+        const ref = db.collection('exam_links').doc(docId);
+        batch.delete(ref);
+        delete AppData.links[docId];
+      });
+      await batch.commit();
+
+      loadAdminLinks();
+      statusLabel.className = 'text-success small fw-bold';
+      statusLabel.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> ✓ 已成功刪除該組所有連結！';
+    } catch (e) {
+      statusLabel.className = 'text-danger small fw-bold';
+      statusLabel.textContent = '刪除失敗：' + e.message;
+    }
+  }
+
+  // 刪除選取的學年度
+  async function deleteCurrentYear() {
+    const selYear = document.getElementById('adminYearSelect').value;
+    if (!selYear) return;
+
+    if (!confirm(`⚠️ 確定要刪除「${selYear}」學年度嗎？\n這將會清除雲端資料庫中該學年度下的所有科目連結紀錄！`)) {
+      return;
+    }
+
+    try {
+      const snapshot = await db.collection('exam_links').where('year', '==', selYear).get();
+      const batch = db.batch();
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+
+      AppData.years = AppData.years.filter(y => y !== selYear);
+      prepareAdminView();
+      alert(`「${selYear}」學年度及其所有試題連結已成功刪除！`);
+    } catch (e) {
+      alert('刪除學年度失敗：' + e.message);
+    }
+  }
+
+  // 刪除選取的考試類別
+  async function deleteCurrentExamType() {
+    const selType = document.getElementById('adminExamTypeSelect').value;
+    if (!selType) return;
+
+    if (!confirm(`⚠️ 確定要刪除「${selType}」考試類別嗎？\n這將會清除雲端資料庫中該考試類別下的所有科目連結紀錄！`)) {
+      return;
+    }
+
+    try {
+      const snapshot = await db.collection('exam_links').where('examType', '==', selType).get();
+      const batch = db.batch();
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+
+      AppData.examTypes = AppData.examTypes.filter(t => t !== selType);
+      prepareAdminView();
+      alert(`「${selType}」考試類別及其所有試題連結已成功刪除！`);
+    } catch (e) {
+      alert('刪除考試類別失敗：' + e.message);
+    }
+  }
+
+  // 刪除選取的書商版本
+  async function deleteCurrentPublisher() {
+    const selPub = document.getElementById('adminPublisherSelect').value;
+    if (!selPub) return;
+
+    const pDisplay = selPub.endsWith('版') ? selPub : selPub + '版';
+    if (!confirm(`⚠️ 確定要刪除「${pDisplay}」書商版本嗎？\n這將會清除雲端資料庫中該書商下的所有科目連結紀錄！`)) {
+      return;
+    }
+
+    try {
+      const snapshot = await db.collection('exam_links').where('publisher', '==', selPub).get();
+      const batch = db.batch();
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+
+      AppData.publishers = AppData.publishers.filter(p => p !== selPub);
+      prepareAdminView();
+      alert(`「${pDisplay}」書商版本及其所有試題連結已成功刪除！`);
+    } catch (e) {
+      alert('刪除書商版本失敗：' + e.message);
     }
   }
 
